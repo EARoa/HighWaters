@@ -12,6 +12,7 @@
 		10EFFF7A1D4A92100092FFD0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 10EFFF781D4A92100092FFD0 /* Main.storyboard */; };
 		10EFFF7C1D4A92100092FFD0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 10EFFF7B1D4A92100092FFD0 /* Assets.xcassets */; };
 		10EFFF7F1D4A92100092FFD0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 10EFFF7D1D4A92100092FFD0 /* LaunchScreen.storyboard */; };
+		10EFFF881D4A98930092FFD0 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10EFFF871D4A98930092FFD0 /* CloudKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,8 @@
 		10EFFF7B1D4A92100092FFD0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		10EFFF7E1D4A92100092FFD0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		10EFFF801D4A92100092FFD0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		10EFFF861D4A988D0092FFD0 /* HighWaters.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = HighWaters.entitlements; sourceTree = "<group>"; };
+		10EFFF871D4A98930092FFD0 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				10EFFF881D4A98930092FFD0 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,6 +42,7 @@
 		10EFFF681D4A920F0092FFD0 = {
 			isa = PBXGroup;
 			children = (
+				10EFFF871D4A98930092FFD0 /* CloudKit.framework */,
 				10EFFF731D4A92100092FFD0 /* HighWaters */,
 				10EFFF721D4A92100092FFD0 /* Products */,
 			);
@@ -54,6 +59,7 @@
 		10EFFF731D4A92100092FFD0 /* HighWaters */ = {
 			isa = PBXGroup;
 			children = (
+				10EFFF861D4A988D0092FFD0 /* HighWaters.entitlements */,
 				10EFFF741D4A92100092FFD0 /* AppDelegate.swift */,
 				10EFFF761D4A92100092FFD0 /* ViewController.swift */,
 				10EFFF781D4A92100092FFD0 /* Main.storyboard */,
@@ -96,6 +102,12 @@
 				TargetAttributes = {
 					10EFFF701D4A920F0092FFD0 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = 3V8KXS5ZB4;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -251,6 +263,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = HighWaters/HighWaters.entitlements;
 				INFOPLIST_FILE = HighWaters/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.earoa.HighWaters;
@@ -262,6 +275,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = HighWaters/HighWaters.entitlements;
 				INFOPLIST_FILE = HighWaters/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.earoa.HighWaters;
