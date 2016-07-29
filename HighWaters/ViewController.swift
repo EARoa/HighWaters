@@ -14,8 +14,8 @@ import CoreLocation
 
 class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDelegate {
 
-     var longitude: String!
-     var latitude: String!
+     var longitude: Double!
+     var latitude: Double!
     @IBOutlet weak var mapView :MKMapView!
     
     var container :CKContainer!
@@ -26,12 +26,42 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         locationSetup()
         self.container = CKContainer.defaultContainer()
         self.publicDB = self.container.publicCloudDatabase
         self.privateDB = self.container.publicCloudDatabase
-    
+        getData()
+
     }
+    
+    
+    func getData() {
+    
+    
+    let query = CKQuery(recordType: "Locations", predicate: NSPredicate(value:true))
+    
+    self.publicDB.performQuery(query, inZoneWithID: nil) { (records:[CKRecord]?, error: NSError?) in
+    
+        dispatch_async(dispatch_get_main_queue(), {
+
+    for location in records!{
+    print(location["Latitude"]!)
+    print(location["Longitude"]!)
+        
+        let pinAnnotation = MKPointAnnotation()
+        pinAnnotation.title = "Hello!"
+        pinAnnotation.coordinate = CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude)
+        self.mapView.addAnnotation(pinAnnotation)
+        
+    }
+    })
+    }
+    }
+    
+    
+    
+    
     
     private func locationSetup(){
         self.locationManager = CLLocationManager()
@@ -60,13 +90,37 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
 
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let locValue:CLLocationCoordinate2D = manager.location!.coordinate
-        print("locations = \(locValue.latitude) \(locValue.longitude)")
+        latitude = locValue.latitude
+        longitude = locValue.longitude
     }
     
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    
+    
+    
+    override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
+        if motion == .MotionShake {
+            
+            
+            let locationData = CKRecord(recordType: "Locations")
+            locationData["Latitude"] = latitude
+            locationData["Longitude"] = longitude
+            
+            print("Shake me!")
+            print(locationData)
+            
+            self.publicDB.saveRecord(locationData) { (record:CKRecord?, error:NSError?) in
+                print(record?.recordID)
+            }
+            
+            
+            
+        }
     }
 
 
