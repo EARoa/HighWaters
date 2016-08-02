@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		106489291D4D968D00C195A1 /* AnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106489281D4D968D00C195A1 /* AnnotationView.swift */; };
 		10EFFF751D4A92100092FFD0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EFFF741D4A92100092FFD0 /* AppDelegate.swift */; };
 		10EFFF771D4A92100092FFD0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EFFF761D4A92100092FFD0 /* ViewController.swift */; };
 		10EFFF7A1D4A92100092FFD0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 10EFFF781D4A92100092FFD0 /* Main.storyboard */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		106489281D4D968D00C195A1 /* AnnotationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnnotationView.swift; sourceTree = "<group>"; };
 		10EFFF711D4A92100092FFD0 /* HighWaters.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HighWaters.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		10EFFF741D4A92100092FFD0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		10EFFF761D4A92100092FFD0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 				10EFFF7B1D4A92100092FFD0 /* Assets.xcassets */,
 				10EFFF7D1D4A92100092FFD0 /* LaunchScreen.storyboard */,
 				10EFFF801D4A92100092FFD0 /* Info.plist */,
+				106489281D4D968D00C195A1 /* AnnotationView.swift */,
 			);
 			path = HighWaters;
 			sourceTree = "<group>";
@@ -148,6 +151,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				10EFFF771D4A92100092FFD0 /* ViewController.swift in Sources */,
+				106489291D4D968D00C195A1 /* AnnotationView.swift in Sources */,
 				10EFFF751D4A92100092FFD0 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -302,6 +306,7 @@
 				10EFFF851D4A92100092FFD0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
