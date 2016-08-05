@@ -30,31 +30,10 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="mapView" destination="yec-wZ-BLv" id="y3t-qh-4br"/>
-                        <outlet property="myCallout" destination="dmO-ar-QSl" id="Qu5-l6-QtL"/>
+                        <outlet property="mapView" destination="yec-wZ-BLv" id="1Te-NE-Orc"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
-                <view contentMode="scaleToFill" id="dmO-ar-QSl">
-                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yb1-3n-pum">
-                            <rect key="frame" x="78" y="49" width="84" height="30"/>
-                            <state key="normal" title="Delete Point"/>
-                            <connections>
-                                <action selector="deleteLocation" destination="BYZ-38-t0r" eventType="touchUpInside" id="QbQ-fN-eG4"/>
-                            </connections>
-                        </button>
-                    </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    <constraints>
-                        <constraint firstItem="Yb1-3n-pum" firstAttribute="leading" secondItem="dmO-ar-QSl" secondAttribute="leading" constant="78" id="66f-2q-OkW"/>
-                        <constraint firstAttribute="trailing" secondItem="Yb1-3n-pum" secondAttribute="trailing" constant="78" id="9Ok-OW-deZ"/>
-                        <constraint firstItem="Yb1-3n-pum" firstAttribute="top" secondItem="dmO-ar-QSl" secondAttribute="top" constant="49" id="QwN-tQ-yhQ"/>
-                        <constraint firstAttribute="bottom" secondItem="Yb1-3n-pum" secondAttribute="bottom" constant="49" id="bds-nF-gGp"/>
-                    </constraints>
-                </view>
             </objects>
             <point key="canvasLocation" x="375" y="308"/>
         </scene>

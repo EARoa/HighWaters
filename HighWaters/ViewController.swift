@@ -14,144 +14,124 @@ import CoreLocation
 
 class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDelegate {
 
-    @IBOutlet weak var myCallout :UIView!
-     var longitude: Double!
-     var latitude: Double!
-    @IBOutlet weak var mapView :MKMapView!
+    @IBOutlet weak var mapView: MKMapView!
+    var locationManager: CLLocationManager!
+    var highWatersAnnotation: MKAnnotation!
+    var container: CKContainer!
+    var publicDB: CKDatabase!
     
-    var container :CKContainer!
-    var publicDB :CKDatabase!
-    var privateDB :CKDatabase!
-    
-    var pinAnnotation = MKPointAnnotation()
-
-    
-    var locationManager  :CLLocationManager!
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        locationSetup()
-        self.container = CKContainer.defaultContainer()
-        self.publicDB = self.container.publicCloudDatabase
-        self.privateDB = self.container.publicCloudDatabase
-        getData()
-
+        databaseSetup()
+        populateFloodLocations()
     }
-    private func locationSetup(){
+
+    private func  databaseSetup() {
         self.locationManager = CLLocationManager()
         self.locationManager.delegate = self
         self.mapView.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.distanceFilter = kCLDistanceFilterNone
         self.locationManager.requestWhenInUseAuthorization()
+        self.locationManager.requestAlwaysAuthorization()
         self.locationManager.startUpdatingLocation()
         self.mapView.showsUserLocation = true
+        self.container = CKContainer.defaultContainer()
+        self.publicDB = self.container.publicCloudDatabase
     }
     
     
-    
-    func getData() {
-        
-        
-        let query = CKQuery(recordType: "Locations", predicate: NSPredicate(value:true))
-        
-        self.publicDB.performQuery(query, inZoneWithID: nil) { (records:[CKRecord]?, error: NSError?) in
-            
-            dispatch_async(dispatch_get_main_queue(), {
-            
-                for location in records!{
-                    print(location["Latitude"]!)
-                    print(location["Longitude"]!)
-//                    let pinAnnotation = MKPointAnnotation()
-                    self.pinAnnotation.title = "Caution!!"
-                    self.pinAnnotation.coordinate = CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude)
-                    self.mapView.addAnnotation(self.pinAnnotation)
-                }
-            })
-        }
-    }
-    
-    
-    
-    func mapView(mapView: MKMapView, didAddAnnotationViews views: [MKAnnotationView]) {
-        if let annotationView = views.first {
-            if let annotation = annotationView.annotation {
-                if annotation is MKUserLocation {
-                    let region = MKCoordinateRegionMakeWithDistance(annotation.coordinate, 250, 250)
-                    self.mapView.setRegion(region, animated: true)
-                }
+    private func populateFloodLocations() {
+        let query = CKQuery(recordType: "Locations", predicate: NSPredicate(format: "name = %@", "location"))
+        self.publicDB.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error: NSError?) in
+            for location in records!{
+                let locations = location["floodLocation"] as! CLLocation
+                let annotationCoordinate = locations.coordinate
+                let highWatersLocationsAnnotation = MKPointAnnotation()
+                highWatersLocationsAnnotation.title = "Warning!"
+                highWatersLocationsAnnotation.coordinate = annotationCoordinate
+                self.mapView.addAnnotation(highWatersLocationsAnnotation)
             }
         }
-        
-    }
-
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let locValue:CLLocationCoordinate2D = manager.location!.coordinate
-        latitude = locValue.latitude
-        longitude = locValue.longitude
-        print("locations = \(locValue.latitude) \(locValue.longitude)")
-    }
-    
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
     }
     
     override func motionEnded(motion: UIEventSubtype, withEvent event: UIEvent?) {
         if motion == .MotionShake {
-            
-            let locationData = CKRecord(recordType: "Locations")
-            locationData["Latitude"] = latitude
-            locationData["Longitude"] = longitude
-            
-            print("Shake me!")
-            print(locationData)
-            
-            self.publicDB.saveRecord(locationData) { (record:CKRecord?, error:NSError?) in
-                print(record?.recordID)
-                
-                self.pinAnnotation.title = "Caution!!"
-                self.pinAnnotation.coordinate = CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude)
-                self.mapView.addAnnotation(self.pinAnnotation)
-            }
+            let highWatersAnnotation = MKPointAnnotation()
+            highWatersAnnotation.title = "Warning!"
+            highWatersAnnotation.coordinate = self.mapView.userLocation.coordinate
+            let savedAnnotation = CLLocation(coordinate: highWatersAnnotation.coordinate, altitude:0, horizontalAccuracy: kCLLocationAccuracyBest, verticalAccuracy: kCLLocationAccuracyBest, timestamp: NSDate())
+            let pinPointedRecord = CKRecord(recordType: "Locations")
+            pinPointedRecord["floodLocation"] = savedAnnotation
+            pinPointedRecord["name"] = "location"
+            self.publicDB.saveRecord(pinPointedRecord) { (record: CKRecord?, error: NSError?) in }
+            self.mapView.addAnnotation(highWatersAnnotation)
         }
     }
-    
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        
-        if annotation is MKUserLocation {
-            return nil
-        }
-        
-        var annotationView = self.mapView.dequeueReusableAnnotationViewWithIdentifier("AnnotationView")
-        
-        if annotationView == nil {
-            annotationView = AnnotationView(annotation: annotation, reuseIdentifier: "AnnotationView")
-        }
-        
-        annotationView?.canShowCallout = true
-        
-        let imageView = UIImageView(image: UIImage(contentsOfFile: "caution"))
-        
-        annotationView?.detailCalloutAccessoryView = self.myCallout
 
-        
-        return annotationView
-        
-    }
-    
-    
-    @IBAction func deleteLocation(){
-        let query = CKQuery(recordType: "Locations", predicate: NSPredicate(value:true))
-        self.publicDB.performQuery(query, inZoneWithID: nil) { (records :[CKRecord]?, error :NSError?) in
-            if let records = records {
-                if let record = records.first {
-                    self.publicDB.deleteRecordWithID(record.recordID, completionHandler: { (recordId :CKRecordID?, error :NSError?) in
-                    })
+    func mapView(mapView: MKMapView, didAddAnnotationViews views: [MKAnnotationView]) {
+        if let annotationView = views.first {
+            if let annotation = annotationView.annotation {
+                if annotation is MKUserLocation {
+                    let region = MKCoordinateRegionMakeWithDistance(annotation.coordinate, 300, 200)
+                    self.mapView.setRegion(region, animated: true)
                 }
             }
         }
     }
-}
 
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        self.highWatersAnnotation = view.annotation
+    }
+    
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is MKUserLocation {
+            return nil
+        }
+        let hazardousPhoto = UIImage(named: "caution")
+        var highWatersAnnotation = self.mapView.dequeueReusableAnnotationViewWithIdentifier("highWatersAnnotation")
+        if highWatersAnnotation == nil {
+            highWatersAnnotation = MKAnnotationView(annotation: annotation, reuseIdentifier: "highWatersAnnotation")
+        } else {
+            highWatersAnnotation?.annotation = annotation
+        }
+        highWatersAnnotation?.frame = CGRectMake(0, 0, 50, 50)
+        let hazardView = UIImageView(image: hazardousPhoto)
+        hazardView.frame.size = CGSize(width: 250, height:  250)
+        highWatersAnnotation?.image = hazardousPhoto
+        highWatersAnnotation?.frame = CGRectMake(0, 0, 50, 50)
+        highWatersAnnotation?.userInteractionEnabled = true
+        highWatersAnnotation!.canShowCallout = true
+        let leftView = UIView(frame: CGRectMake(0,0,60,80))
+        let delete = UIButton(frame: CGRectMake(0,-15.5,60,80))
+        delete.titleLabel?.textColor = UIColor.blackColor()
+        delete.setTitle("Delete", forState: UIControlState.Normal)
+        delete.addTarget(self, action: #selector(destoryAnnotation), forControlEvents:UIControlEvents.TouchUpInside)
+        leftView.backgroundColor = UIColor(red: 202.0/255, green: 15.0/255, blue: 20.0/255, alpha: 1.0)
+        leftView.addSubview(delete)
+        highWatersAnnotation!.leftCalloutAccessoryView = leftView
+        return highWatersAnnotation
+    }
+
+    func destoryAnnotation() {
+        let query = CKQuery(recordType: "Locations", predicate: NSPredicate(format: "name = %@", "location"))
+        self.publicDB.performQuery(query, inZoneWithID: nil) { (records: [CKRecord]?, error: NSError?) in
+            if let locations = records {
+                for loactionRecord in locations {
+                    let recordCoordinate = loactionRecord["floodLocation"] as! CLLocation
+                    let savedLongtitudeCoordinate = recordCoordinate.coordinate.longitude
+                    let longitudeSavedAnnotation = self.highWatersAnnotation.coordinate.longitude
+                    let savedLatitudeCoordinate = recordCoordinate.coordinate.latitude
+                    let latitudeSavedAnnotation = self.highWatersAnnotation.coordinate.latitude
+                    if(savedLongtitudeCoordinate == longitudeSavedAnnotation && savedLatitudeCoordinate == latitudeSavedAnnotation ){
+                        self.publicDB.deleteRecordWithID(loactionRecord.recordID, completionHandler: { (recordId: CKRecordID?, error: NSError?) in })
+                    }
+                }
+            }
+        }
+        mapView.removeAnnotation(self.highWatersAnnotation)
+    }
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+}
